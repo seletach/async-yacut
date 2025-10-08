@@ -63,12 +63,11 @@ def upload_files():
     form = UploadForm()
 
     if form.validate_on_submit():
-        files = request.files.getlist('files')
-
         valid_files = []
-        for f in files:
-            if f and f.filename and f.filename.strip():
-                valid_files.append(f)
+        if form.files.data:
+            for f in form.files.data:
+                if f and f.filename and f.filename.strip():
+                    valid_files.append(f)
 
         if not valid_files:
             flash('Выберите хотя бы один файл для загрузки')
@@ -87,6 +86,7 @@ def upload_files():
                     file_links.append(short_link_info)
 
             if file_links:
+                form.file_links = file_links
                 return render_template(
                     'upload_files.html',
                     form=form,
