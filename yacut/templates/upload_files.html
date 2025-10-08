@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% block title %} Загрузка файлов {% endblock title %}
+{% block content %}
+<main>
+    <section class="container my-5 px-4">
+      <h1 class="text-center"><span style="color:red">Ya</span>Cut</h1>
+      <p class="text-center my-4">
+        Загрузите файлы в Яндекс Диск!
+      </p>
+
+      <div class="container">
+        <div class="row my-3">
+          <div class="col-sm">
+          </div>
+          <div class="col-sm">
+
+<!-- НАЧАЛО ФОРМЫ -->
+
+            <form method="POST" novalidate enctype="multipart/form-data">
+              {{ form.csrf_token }}
+
+              {{ form.files(class="form-control form-control-lg py-2 mb-3") }}
+
+              <p>
+                {% with errors = form.files.errors %}
+                  {% if errors %}
+                    {% for error in errors %}
+                      <span style="color:red">{{ error }}</span>
+                    {% endfor %}
+                  {% endif %}
+                {% endwith %}
+              </p>
+
+            {{ form.submit(class='btn btn-primary') }}
+
+            </form>
+
+<!-- КОНЕЦ ФОРМЫ -->
+
+          </div>
+          <div class="col-sm">
+          </div>
+        </div>
+      </div>
+
+<!-- ВЫВОД РЕЗУЛЬТАТОВ -->
+
+      {% if file_links %}
+        <div class="container">
+          <div class="row">
+            <div class="col-sm">
+            </div>
+            <div class="col-sm">
+              <div class="card">
+                <div class="card-header">
+                  <h5 class="text-center">Файлы успешно загружены!</h5>
+                </div>
+                <div class="card-body">
+                  <ul class="list-group list-group-flush">
+                    {% for file in file_links %}
+                    <li class="list-group-item">
+                      <strong>{{ file.filename }}</strong>
+                      <br>
+                      <a href="{{ file.short_link }}" target="_blank" class="text-break">
+                        {{ file.short_link }}
+                      </a>
+                    </li>
+                    {% endfor %}
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm">
+            </div>
+          </div>
+        </div>
+      {% endif %}
+
+<!-- КОНЕЦ ВЫВОДА РЕЗУЛЬТАТОВ -->
+
+      <div class="container">
+        <div class="row ">
+          <div class="col-sm">
+          </div>
+          <div class="col-sm">
+            <p class="text-center">
+            <h5 class="text-center">
+              {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                  {% for message in messages %}
+                    {{ message }}
+                  {% endfor %}
+                {% endif %}
+              {% endwith %}
+            </h5>
+            </p>
+          </div>
+          <div class="col-sm">
+          </div>
+        </div>
+      </div>
+
+    </section>
+</main>
+{% endblock content %}

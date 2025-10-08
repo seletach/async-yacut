@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% block title %} YaCut - укоротитель ссылок {% endblock title %}
+{% block content %}
+<main>
+    <section class="container my-5 px-4">
+      <h1 class="text-center"><span style="color:red">Ya</span>Cut</h1>
+      <p class="text-center my-4">
+        Создайте короткую ссылку автоматически или предложите свой вариант
+      </p>
+
+      <div class="container">
+        <div class="row my-3">
+          <div class="col-sm">
+          </div>
+          <div class="col-sm">
+
+<!-- НАЧАЛО ФОРМЫ -->
+
+            <form method="POST" novalidate>
+              {{ form.csrf_token }}
+
+              {{ form.original_link(class="form-control form-control-lg py-2 mb-3", placeholder=form.original_link.label.text) }}
+
+              <p>
+                {% with errors = form.original_link.errors %}
+                  {% if errors %}
+                    {% for error in errors %}
+                      <span style="color:red">{{ error }}</span>
+                    {% endfor %}
+                  {% endif %}
+                {% endwith %}
+              </p>
+
+              {{ form.custom_id(class="form-control form-control-lg py-2 mb-3", placeholder=form.custom_id.label.text) }}
+
+              <p>
+                {% with errors = form.custom_id.errors %}
+                  {% if errors %}
+                    {% for error in errors %}
+                      <span style="color:red">{{ error }}</span>
+                    {% endfor %}
+                  {% endif %}
+                {% endwith %}
+              </p>
+
+            {{ form.submit(class='btn btn-primary') }}
+
+            </form>
+
+<!-- КОНЕЦ ФОРМЫ -->
+
+          </div>
+          <div class="col-sm">
+          </div>
+        </div>
+      </div>
+
+      <div class="container">
+        <div class="row ">
+          <div class="col-sm">
+          </div>
+          <div class="col-sm">
+            <p class="text-center">
+            <h5 class="text-center">
+              {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                  {% for message in messages %}
+                    {{ message }}
+                  {% endfor %}
+                {% endif %}
+              {% endwith %}
+
+              {% if short_id %}
+                <h5 class="text-center">
+                  Ваша короткая ссылка: 
+                  <br>
+                  <a href="{{ url_for('redirect_view', short_id=short_id, _external=True) }}" target="_blank" class="h6">
+                    {{ url_for('redirect_view', short_id=short_id, _external=True) }}
+                  </a>
+                </h5>
+              {% endif %}
+
+              <h3 style="color: red;">{{ error_message }}</h3>
+
+            </h5>
+            </p>
+          </div>
+          <div class="col-sm">
+          </div>
+        </div>
+      </div>
+
+    </section>
+</main>
+{% endblock content %}
