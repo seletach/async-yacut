@@ -4,27 +4,31 @@ from . import app
 from .error_handlers import InvalidAPIUsage, ShortExistsException
 from .models import URLMap
 
+from settings import Config
+
+
 @app.route('/api/id/', methods=('POST',))
 def add_url_map():
     if not request.data:
-        raise InvalidAPIUsage('Отсутствует тело запроса')
-    
+        raise InvalidAPIUsage(Config.MISSING_REQIEST)
+
     try:
         data = request.get_json()
     except Exception:
-        raise InvalidAPIUsage('Отсутствует тело запроса')
-    
+        raise InvalidAPIUsage(Config.MISSING_REQIEST)
+
     if data is None:
-        raise InvalidAPIUsage('Отсутствует тело запроса')
-        
+        raise InvalidAPIUsage(Config.MISSING_REQIEST)
+
     if 'url' not in data:
         raise InvalidAPIUsage('"url" является обязательным полем!')
-    
+
     try:
         url_map = URLMap.add_url_map(data.get('url'), data.get('custom_id'))
     except ShortExistsException as e:
         raise InvalidAPIUsage(str(e))
     return jsonify(url_map.to_dict()), 201
+
 
 @app.route('/api/id/<short_id>/', methods=('GET',))
 def get_original_url(short_id):

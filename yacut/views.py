@@ -8,13 +8,16 @@ import random
 import string
 import logging
 
+from settings import Config
+
 logger = logging.getLogger(__name__)
+
 
 def get_custom_id():
     available_chars = string.ascii_letters + string.digits
 
     while True:
-        short_link = ""
+        short_link = ''
         for i in range(6):
             random_char = random.choice(available_chars)
             short_link += random_char
@@ -23,6 +26,7 @@ def get_custom_id():
 
         if not existing_url:
             return short_link
+
 
 @app.route('/', methods=['GET', 'POST'])
 def index_view():
@@ -37,8 +41,10 @@ def index_view():
             custom_id = None
 
         if hasattr(form, 'existing_short_id'):
-            flash('Для этой ссылки уже существует короткий вариант...')
-            return render_template('main.html', form=form, short_id=form.existing_short_id)
+            flash(Config.AVAILABILITY_SHORT)
+            return render_template('main.html',
+                                   form=form,
+                                   short_id=form.existing_short_id)
 
         if custom_id:
             short_id = custom_id
@@ -54,6 +60,7 @@ def index_view():
         return render_template('main.html', form=form, short_id=short_id)
 
     return render_template('main.html', form=form)
+
 
 @app.route('/<short_id>', endpoint='redirect_view')
 def redirect_view(short_id):

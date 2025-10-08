@@ -4,6 +4,8 @@ from flask import url_for
 from yacut import db
 import string
 import random
+from settings import Config
+
 
 class URLMap(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -14,7 +16,9 @@ class URLMap(db.Model):
     def to_dict(self):
         return {
             'url': self.original,
-            'short_link': url_for('redirect_view', short_id=self.short, _external=True)
+            'short_link': url_for('redirect_view',
+                                  short_id=self.short,
+                                  _external=True)
         }
 
     @classmethod
@@ -27,17 +31,17 @@ class URLMap(db.Model):
 
         if custom_id:
             if custom_id == 'files':
-                raise ShortExistsException('Предложенный вариант короткой ссылки уже существует.')
+                raise ShortExistsException(Config.VALIDATE_SHRT_MSG)
 
             if len(custom_id) > 16:
-                raise ShortExistsException('Указано недопустимое имя для короткой ссылки')
+                raise ShortExistsException(Config.WRONG_NAME)
 
             allowed_chars = string.ascii_letters + string.digits
             if not all(c in allowed_chars for c in custom_id):
-                raise ShortExistsException('Указано недопустимое имя для короткой ссылки')
+                raise ShortExistsException(Config.WRONG_NAME)
 
             if cls.get_by_short_id(custom_id):
-                raise ShortExistsException('Предложенный вариант короткой ссылки уже существует.')
+                raise ShortExistsException(Config.VALIDATE_SHRT_MSG)
 
             short_id = custom_id
         else:
@@ -46,7 +50,7 @@ class URLMap(db.Model):
         url_map = cls(original=original_url, short=short_id)
         db.session.add(url_map)
         db.session.commit()
-        
+
         return url_map
 
     @classmethod
