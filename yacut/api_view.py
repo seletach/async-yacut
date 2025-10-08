@@ -1,14 +1,15 @@
 from flask import jsonify, request
 
+from settings import Config
+
 from . import app
 from .error_handlers import InvalidAPIUsage, ShortExistsException
 from .models import URLMap
 
-from settings import Config
-
 
 @app.route('/api/id/', methods=('POST',))
 def add_url_map():
+    """Создает новую короткую ссылку для указанного URL."""
     if not request.data:
         raise InvalidAPIUsage(Config.MISSING_REQIEST)
 
@@ -32,6 +33,7 @@ def add_url_map():
 
 @app.route('/api/id/<short_id>/', methods=('GET',))
 def get_original_url(short_id):
+    """Возвращает оригинальный URL для указанной короткой ссылки."""
     url_map = URLMap.query.filter_by(short=short_id).first()
     if url_map is None:
         raise InvalidAPIUsage('Указанный id не найден', 404)

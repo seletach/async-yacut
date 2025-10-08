@@ -1,19 +1,22 @@
+import random
+import string
 from datetime import datetime
+
 from flask import url_for
 
-from yacut import db
-import string
-import random
 from settings import Config
+from yacut import db
 
 
 class URLMap(db.Model):
+    """Модель для хранения соответствия оригинальных и коротких ссылок."""
     id = db.Column(db.Integer, primary_key=True)
     original = db.Column(db.String(256), unique=True, nullable=False)
     short = db.Column(db.String(64), unique=True, nullable=False)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
 
     def to_dict(self):
+        """Преобразует объект в словарь для API-ответа."""
         return {
             'url': self.original,
             'short_link': url_for('redirect_view',
@@ -23,10 +26,12 @@ class URLMap(db.Model):
 
     @classmethod
     def get_by_short_id(cls, short_id):
+        """Возвращает объект URLMap по короткому идентификатору."""
         return cls.query.filter_by(short=short_id).first()
 
     @classmethod
     def add_url_map(cls, original_url, custom_id=None):
+        """Создает новую запись соответствия URL и короткой ссылки."""
         from .error_handlers import ShortExistsException
 
         if custom_id:
@@ -55,6 +60,7 @@ class URLMap(db.Model):
 
     @classmethod
     def generate_short_id(cls):
+        """Генерирует уникальный короткий идентификатор."""
         chars = string.ascii_letters + string.digits
         while True:
             short_id = ''.join(random.choices(chars, k=6))

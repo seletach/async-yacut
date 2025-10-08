@@ -1,6 +1,7 @@
-from flask import render_template, request, flash, url_for
-import requests
 import os
+
+from flask import render_template, flash, url_for
+import requests
 
 from . import app
 from .forms import UploadForm
@@ -17,6 +18,7 @@ AUTH_HEADERS = {'Authorization': f'OAuth {DISK_TOKEN}'}
 
 def upload_file_to_yandex_disk(file,
                                remote_folder='disk:/Приложения/YaCut/'):
+    """Загружает файл на Яндекс Диск и возвращает информацию о загрузке."""
     filename = file.filename
     remote_path = f'{remote_folder}{filename}'
 
@@ -48,6 +50,7 @@ def upload_file_to_yandex_disk(file,
 
 
 def create_short_link_for_file(download_url, filename):
+    """Создает короткую ссылку для загруженного файла."""
     url_map = URLMap.add_url_map(download_url)
     return {
         'filename': filename,
@@ -60,6 +63,9 @@ def create_short_link_for_file(download_url, filename):
 
 @app.route('/files', methods=['GET', 'POST'])
 def upload_files():
+    """
+    Обрабатывает загрузку файлов на Яндекс Диск и создание коротких ссылок.
+    """
     form = UploadForm()
 
     if form.validate_on_submit():

@@ -1,19 +1,14 @@
 from flask_wtf import FlaskForm
-from wtforms import (URLField,
-                     StringField,
-                     SubmitField,
-                     ValidationError)
-from wtforms.validators import (DataRequired,
-                                URL,
-                                Length,
-                                Optional)
 from flask_wtf.file import MultipleFileField
+from wtforms import URLField, StringField, SubmitField, ValidationError
+from wtforms.validators import DataRequired, URL, Length, Optional
 
-from .models import URLMap
 from settings import Config
+from .models import URLMap
 
 
 class LinkForm(FlaskForm):
+    """Форма для создания коротких ссылок."""
     original_link = URLField(
         'Длинная ссылка',
         validators=[DataRequired(message='Обязательное поле'),
@@ -23,6 +18,7 @@ class LinkForm(FlaskForm):
     submit = SubmitField('Укоротить')
 
     def validate_custom_id(self, field):
+        """Проверяет валидность пользовательского короткого идентификатора."""
         if field.data and field.data.strip():
             custom_id = field.data.strip()
             if custom_id == 'files':
@@ -33,6 +29,7 @@ class LinkForm(FlaskForm):
                 raise ValidationError(Config.VALIDATE_SHRT_MSG)
 
     def validate_original_link(self, field):
+        """Проверяет, существует ли уже короткая ссылка для данного URL."""
         if field.data:
             existing_original = URLMap.query.filter_by(
                 original=field.data).first()
@@ -42,6 +39,7 @@ class LinkForm(FlaskForm):
 
 
 class UploadForm(FlaskForm):
+    """Форма для загрузки файлов на Яндекс Диск."""
     files = MultipleFileField(
         'Выберите файлы для загрузки')
     submit = SubmitField('Загрузить на Яндекс Диск')

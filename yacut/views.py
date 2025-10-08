@@ -1,19 +1,19 @@
-from flask import render_template, flash, redirect
-
-from .forms import LinkForm
-from .models import URLMap
-
-from . import app, db
+import logging
 import random
 import string
-import logging
 
+from flask import render_template, flash, redirect
+
+from . import app, db
+from .forms import LinkForm
+from .models import URLMap
 from settings import Config
 
 logger = logging.getLogger(__name__)
 
 
 def get_custom_id():
+    """Генерирует уникальный короткий идентификатор."""
     available_chars = string.ascii_letters + string.digits
 
     while True:
@@ -30,6 +30,7 @@ def get_custom_id():
 
 @app.route('/', methods=['GET', 'POST'])
 def index_view():
+    """Главная страница для создания коротких ссылок."""
     form = LinkForm()
 
     if form.validate_on_submit():
@@ -64,5 +65,6 @@ def index_view():
 
 @app.route('/<short_id>', endpoint='redirect_view')
 def redirect_view(short_id):
+    """Перенаправляет с короткой ссылки на оригинальный URL."""
     url_map = URLMap.query.filter_by(short=short_id).first_or_404()
     return redirect(url_map.original)
