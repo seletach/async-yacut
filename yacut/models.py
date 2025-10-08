@@ -1,9 +1,9 @@
 from datetime import datetime
+from flask import url_for
 
 from yacut import db
 import string
 import random
-
 
 class URLMap(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -14,7 +14,7 @@ class URLMap(db.Model):
     def to_dict(self):
         return {
             'url': self.original,
-            'short_link': f'http://localhost/{self.short}'
+            'short_link': url_for('redirect_view', short_id=self.short, _external=True)
         }
 
     @classmethod

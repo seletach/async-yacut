@@ -1,4 +1,4 @@
-from flask import render_template, request, flash
+from flask import render_template, request, flash, url_for
 import requests
 from werkzeug.datastructures import FileStorage
 import os
@@ -49,18 +49,15 @@ def upload_file_to_yandex_disk(file, remote_folder='disk:/Приложения/Y
         'download_url': download_url
     }
 
-
 def create_short_link_for_file(download_url, filename):
-    """
-    Создает короткую ссылку для файла
-    """
     url_map = URLMap.add_url_map(download_url)
     return {
         'filename': filename,
-        'short_link': f"http://localhost/{url_map.short}",
+        'short_link': url_for('redirect_view',
+                              short_id=url_map.short,
+                              _external=True),
         'original_url': download_url
     }
-
 
 @app.route('/files', methods=['GET', 'POST'])
 def upload_files():

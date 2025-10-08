@@ -55,7 +55,7 @@ def index_view():
 
     return render_template('main.html', form=form)
 
-@app.route('/<short_id>')
+@app.route('/<short_id>', endpoint='redirect_view')
 def redirect_view(short_id):
     url_map = URLMap.query.filter_by(short=short_id).first_or_404()
     return redirect(url_map.original)
