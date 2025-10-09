@@ -1,6 +1,4 @@
 import logging
-import random
-import string
 
 from flask import render_template, flash, redirect
 
@@ -10,22 +8,6 @@ from .models import URLMap
 from settings import Config
 
 logger = logging.getLogger(__name__)
-
-
-def get_custom_id():
-    """Генерирует уникальный короткий идентификатор."""
-    available_chars = string.ascii_letters + string.digits
-
-    while True:
-        short_link = ''
-        for i in range(6):
-            random_char = random.choice(available_chars)
-            short_link += random_char
-
-        existing_url = URLMap.query.filter_by(short=short_link).first()
-
-        if not existing_url:
-            return short_link
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -50,7 +32,7 @@ def index_view():
         if custom_id:
             short_id = custom_id
         else:
-            short_id = get_custom_id()
+            short_id = URLMap.generate_short_id()
 
         new_url = URLMap(original=original_link, short=short_id)
         db.session.add(new_url)

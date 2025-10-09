@@ -1,4 +1,5 @@
 from flask import jsonify, request
+from http import HTTPStatus
 
 from settings import Config
 
@@ -28,7 +29,7 @@ def add_url_map():
         url_map = URLMap.add_url_map(data.get('url'), data.get('custom_id'))
     except ShortExistsException as e:
         raise InvalidAPIUsage(str(e))
-    return jsonify(url_map.to_dict()), 201
+    return jsonify(url_map.to_dict()), HTTPStatus.CREATED
 
 
 @app.route('/api/id/<short_id>/', methods=('GET',))
@@ -37,4 +38,4 @@ def get_original_url(short_id):
     url_map = URLMap.query.filter_by(short=short_id).first()
     if url_map is None:
         raise InvalidAPIUsage('Указанный id не найден', 404)
-    return jsonify({'url': url_map.original}), 200
+    return jsonify({'url': url_map.original}), HTTPStatus.OK

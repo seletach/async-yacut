@@ -1,11 +1,14 @@
 import random
 import string
+import re
 from datetime import datetime
 
 from flask import url_for
 
 from settings import Config
 from yacut import db
+
+from .error_handlers import ShortExistsException
 
 
 class URLMap(db.Model):
@@ -32,8 +35,6 @@ class URLMap(db.Model):
     @classmethod
     def add_url_map(cls, original_url, custom_id=None):
         """Создает новую запись соответствия URL и короткой ссылки."""
-        from .error_handlers import ShortExistsException
-
         if custom_id:
             if custom_id == 'files':
                 raise ShortExistsException(Config.VALIDATE_SHRT_MSG)
@@ -41,8 +42,7 @@ class URLMap(db.Model):
             if len(custom_id) > 16:
                 raise ShortExistsException(Config.WRONG_NAME)
 
-            allowed_chars = string.ascii_letters + string.digits
-            if not all(c in allowed_chars for c in custom_id):
+            if not re.match(r'^[A-Za-z0-9]+$', custom_id):
                 raise ShortExistsException(Config.WRONG_NAME)
 
             if cls.get_by_short_id(custom_id):
@@ -63,6 +63,7 @@ class URLMap(db.Model):
         """Генерирует уникальный короткий идентификатор."""
         chars = string.ascii_letters + string.digits
         while True:
-            short_id = ''.join(random.choices(chars, k=6))
+            short_id = ''.join(random.choices(chars,
+                                              k=Config.LENGHT_ID))
             if not cls.get_by_short_id(short_id):
                 return short_id

@@ -1,3 +1,5 @@
+import re
+
 from flask_wtf import FlaskForm
 from flask_wtf.file import MultipleFileField
 from wtforms import URLField, StringField, SubmitField, ValidationError
@@ -14,15 +16,19 @@ class LinkForm(FlaskForm):
         validators=[DataRequired(message='Обязательное поле'),
                     URL(message='Введите корректный URL адрес')])
     custom_id = StringField('Ваш вариант короткой ссылки',
-                            validators=[Length(1, 16), Optional()])
+                            validators=[Length(max=16), Optional()])
     submit = SubmitField('Укоротить')
 
     def validate_custom_id(self, field):
         """Проверяет валидность пользовательского короткого идентификатора."""
         if field.data and field.data.strip():
             custom_id = field.data.strip()
+
             if custom_id == 'files':
                 raise ValidationError(Config.VALIDATE_SHRT_MSG)
+
+            if not re.match(r'^[A-Za-z0-9]+$', custom_id):
+                raise ValidationError(Config.WRONG_NAME)
 
             existing_url = URLMap.query.filter_by(short=custom_id).first()
             if existing_url:

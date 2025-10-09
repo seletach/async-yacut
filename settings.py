@@ -9,3 +9,4 @@ class Config(object):
     WRONG_NAME = 'Указано недопустимое имя для короткой ссылки'
     AVAILABILITY_SHORT = 'Для этой ссылки уже существует короткий вариант.'
     MISSING_REQIEST = 'Отсутствует тело запроса'
+    LENGHT_ID = 6
