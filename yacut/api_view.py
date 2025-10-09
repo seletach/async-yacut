@@ -12,10 +12,10 @@ from .models import URLMap
 def add_url_map():
     """Создает новую короткую ссылку для указанного URL."""
     data = request.get_json(silent=True)
-    
+
     if not data:
         raise InvalidAPIUsage(Config.MISSING_REQIEST)
-    
+
     if 'url' not in data:
         raise InvalidAPIUsage('"url" является обязательным полем!')
 
@@ -23,7 +23,7 @@ def add_url_map():
         url_map = URLMap.add_url_map(data.get('url'), data.get('custom_id'))
     except ShortExistsException as e:
         raise InvalidAPIUsage(str(e))
-    
+
     return jsonify(url_map.to_dict()), HTTPStatus.CREATED
 
 
